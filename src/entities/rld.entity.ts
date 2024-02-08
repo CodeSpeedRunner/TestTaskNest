@@ -21,8 +21,8 @@ export class RLD {
   @Column('bigint')
   locus_id: number;
 
-  @ManyToOne(() => RL, (rl) => rl.rls)
-  @JoinColumn({ name: 'locus_id' }) 
+  @ManyToOne(() => RL, (rl) => rl.rlds)
+  @JoinColumn({ name: 'locus_id' })
   rl: RL;
 
   @Column('text')

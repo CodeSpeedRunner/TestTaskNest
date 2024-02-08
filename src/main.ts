@@ -30,12 +30,5 @@ async function bootstrap() {
   app.enableCors();
 
   await app.listen(3000);
-  // try {
-  //   const connection = getConnection('default');
-  //   const isConnected = connection.isConnected;
-  //   console.log('Database connection status: ', isConnected);
-  // } catch (error) {
-  //   console.error('Error while connecting to the database', error);
-  // }
 }
 bootstrap();

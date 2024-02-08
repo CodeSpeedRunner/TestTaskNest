@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RL } from './entities/rl.entity';
 import { Repository } from 'typeorm';
 import { RLD } from './entities/rld.entity';
+import { GetLocusQueryDto } from './dto/rl.dto';
 
 @Injectable()
 export class AppService {
@@ -14,10 +15,7 @@ export class AppService {
   ) {}
 
   async getLocus(
-    id: number,
-    assemblyId: string,
-    regionId: number,
-    membership_status: string,
+    locus: GetLocusQueryDto,
     sideloading: boolean,
     page: number,
     limit: number,
@@ -25,75 +23,23 @@ export class AppService {
   ): Promise<RL[]> {
     const offset = page * limit - limit;
 
-    if (role === 'admin') {
-      if (sideloading) {
-        const result = await this.rlRepository
-          .createQueryBuilder('rnc_locus')
-          .leftJoinAndSelect('rnc_locus.rls', 'rld')
-          .where('rnc_locus.id = :id', {
-            id: id,
-          })
-          .andWhere('rnc_locus.assembly_id = :assemblyId', {
-            assemblyId: assemblyId,
-          })
-          .andWhere('rld.region_id = :regionId', {
-            regionId: regionId,
-          })
-          .andWhere('rld.membership_status = :membership_status', {
-            membership_status: membership_status,
-          })
-          .take(limit)
-          .skip(offset)
-          .getMany();
-        return result;
-      } else {
-        const result = await this.rlRepository
-          .createQueryBuilder('rnc_locus')
-          .where('rnc_locus.id = :id', {
-            id: id,
-          })
-          .andWhere('rnc_locus.assembly_id = :assemblyId', {
-            assemblyId: assemblyId,
-          })
-          .take(limit)
-          .skip(offset)
-          .getMany();
-        return result;
-      }
-    } else if (role === 'normal') {
-      const result = await this.rlRepository
-        .createQueryBuilder('rnc_locus')
-        .where('rnc_locus.id = :id', {
-          id: id,
-        })
-        .andWhere('rnc_locus.assembly_id = :assemblyId', {
-          assemblyId: assemblyId,
-        })
-        .take(limit)
-        .skip(offset)
-        .getMany();
-      return result;
-    } else {
-      if (
-        regionId == 86118093 ||
-        regionId == 86696489 ||
-        regionId == 88186467
-      ) {
+    try {
+      if (role === 'admin') {
         if (sideloading) {
           const result = await this.rlRepository
             .createQueryBuilder('rnc_locus')
-            .leftJoinAndSelect('rnc_locus.rls', 'rld')
+            .leftJoinAndSelect('rnc_locus.rlds', 'rld')
             .where('rnc_locus.id = :id', {
-              id: id,
+              id: locus.id,
             })
             .andWhere('rnc_locus.assembly_id = :assemblyId', {
-              assemblyId: assemblyId,
+              assemblyId: locus.assembly_id,
             })
             .andWhere('rld.region_id = :regionId', {
-              regionId: regionId,
+              regionId: locus.region_id,
             })
             .andWhere('rld.membership_status = :membership_status', {
-              membership_status: membership_status,
+              membership_status: locus.membership_status,
             })
             .take(limit)
             .skip(offset)
@@ -103,17 +49,71 @@ export class AppService {
           const result = await this.rlRepository
             .createQueryBuilder('rnc_locus')
             .where('rnc_locus.id = :id', {
-              id: id,
+              id: locus.id,
             })
             .andWhere('rnc_locus.assembly_id = :assemblyId', {
-              assemblyId: assemblyId,
+              assemblyId: locus.assembly_id,
             })
             .take(limit)
             .skip(offset)
             .getMany();
           return result;
         }
+      } else if (role === 'normal') {
+        const result = await this.rlRepository
+          .createQueryBuilder('rnc_locus')
+          .where('rnc_locus.id = :id', {
+            id: locus.id,
+          })
+          .andWhere('rnc_locus.assembly_id = :assemblyId', {
+            assemblyId: locus.assembly_id,
+          })
+          .getMany();
+        return result;
+      } else {
+        if (
+          locus.region_id == 86118093 ||
+          locus.region_id == 86696489 ||
+          locus.region_id == 88186467
+        ) {
+          if (sideloading) {
+            const result = await this.rlRepository
+              .createQueryBuilder('rnc_locus')
+              .leftJoinAndSelect('rnc_locus.rls', 'rld')
+              .where('rnc_locus.id = :id', {
+                id: locus.id,
+              })
+              .andWhere('rnc_locus.assembly_id = :assemblyId', {
+                assemblyId: locus.assembly_id,
+              })
+              .andWhere('rld.region_id = :regionId', {
+                regionId: locus.region_id,
+              })
+              .andWhere('rld.membership_status = :membership_status', {
+                membership_status: locus.membership_status,
+              })
+              .take(limit)
+              .skip(offset)
+              .getMany();
+            return result;
+          } else {
+            const result = await this.rlRepository
+              .createQueryBuilder('rnc_locus')
+              .where('rnc_locus.id = :id', {
+                id: locus.id,
+              })
+              .andWhere('rnc_locus.assembly_id = :assemblyId', {
+                assemblyId: locus.assembly_id,
+              })
+              .take(limit)
+              .skip(offset)
+              .getMany();
+            return result;
+          }
+        }
       }
+    } catch (err: any) {
+      throw err;
     }
   }
 }

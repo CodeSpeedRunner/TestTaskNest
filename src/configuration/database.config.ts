@@ -3,7 +3,6 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
-// TODO: add joi|yup validation.
 export default registerAs('database', (): TypeOrmModuleOptions => {
   const options: TypeOrmModuleOptions = {
     type: 'postgres',

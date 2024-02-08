@@ -31,6 +31,6 @@ export class RL {
   member_count: number;
 
   @OneToMany(() => RLD, (rld) => rld.rl)
-  rls?: RLD[];
+  rlds?: RLD[];
 }
 export { RLD };

@@ -6,7 +6,7 @@ import {
   Post,
   Query,
   Session,
-  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { RL } from './entities/rl.entity';
@@ -14,6 +14,7 @@ import { ApiQuery } from '@nestjs/swagger';
 import { AuthService } from './auth/auth.service';
 import * as jwt from 'jsonwebtoken';
 import { User } from './dto/user-dto';
+import { GetLocusQueryDto } from './dto/rl.dto';
 // import { RLD } from './entities/rl.entity';
 
 @Controller()
@@ -23,16 +24,12 @@ export class AppController {
     private readonly authService: AuthService,
   ) {}
 
-  // @Get('/locus')
   @Get('/locus')
   @ApiQuery({ name: 'sideloading', required: true, type: Boolean })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'page', required: false, type: Number })
   async getLocus(
-    @Query('id') id: number,
-    @Query('assemblyId') assemblyId: string,
-    @Query('regionId') regionId: number,
-    @Query('membership_status') membership_status: string,
+    @Query() query: GetLocusQueryDto,
     @Query('sideloading') sideloading: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 1000,
@@ -40,20 +37,16 @@ export class AppController {
   ): Promise<RL[]> {
     if (sessionStorage.access_token) {
       const decoded = jwt.decode(sessionStorage.access_token) as User;
-      console.log(decoded.role);
       const convertedSideloading = sideloading === 'true';
       return await this.appService.getLocus(
-        id,
-        assemblyId,
-        regionId,
-        membership_status,
+        query,
         convertedSideloading,
         page,
         limit,
         decoded.role,
       );
     } else {
-      throw new NotFoundException();
+      throw new UnauthorizedException();
     }
   }
 

@@ -5,9 +5,9 @@ import { UserRole } from '../types/role-enum';
 @Injectable()
 export class UserService {
   private readonly users: User[] = [
-    { id: 1, username: 'John', password: '12345', role: UserRole.ADMIN },
-    { id: 1, username: 'Harvy', password: '56789', role: UserRole.NORMAL },
-    { id: 1, username: 'Lavy', password: 'qwerty', role: UserRole.LIMITED },
+    { id: 1, username: 'User1', password: 'qwert', role: UserRole.ADMIN },
+    { id: 1, username: 'User2', password: '1q2w3e', role: UserRole.NORMAL },
+    { id: 1, username: 'User3', password: '1234', role: UserRole.LIMITED },
   ];
 
   async getUser(username: string): Promise<User | undefined> {
